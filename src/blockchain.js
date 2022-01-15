@@ -125,6 +125,7 @@ class Blockchain {
         }
     }
 
+    // Sign message with https://reinproject.org/bitcoin-signature-tool/#sign
     _verifyBitcoinMessage(message, address, signature) {
         try {
             const verified = bitcoinMessage.verify(message, address, signature);
