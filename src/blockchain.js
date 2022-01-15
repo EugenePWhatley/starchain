@@ -153,7 +153,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             const { verified, error } = self._verifyMessage(message, address, signature)
             if (!verified) return reject(`Message failed verification: ${error}`)
-            const block = new BlockClass.Block({ owner: address, star });
+            const block = new BlockClass.Block({ owner: address, star }); // https://knowledge.udacity.com/questions/322136
             self._addBlock(block)
             resolve(block)
         });
