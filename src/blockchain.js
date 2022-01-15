@@ -61,27 +61,26 @@ class Blockchain {
      * Note: the symbol `_` in the method name indicates in the javascript convention 
      * that this method is a private method. 
      */
+    _updateBlock(block, height) {
+        block.previousBlockHash = this.chain[height]?.hash
+        block.time = new Date().getTime().toString()
+        block.height = this.height + 1
+        block.hash = SHA256(JSON.stringify(block))
+    }
+
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            const result = self.getChainHeight().then(height => {
-                console.log("In here")
-                block.previousHash = self.chain[height]?.hash
-                console.log(`New block previous hash: ${block.previousHash}`)
-                block.time = new Date().getTime().toString()
-                console.log(`New block time: ${block.time}`)
-                block.height = self.height + 1
-                console.log(`New block height: ${block.height}`)
-                block.hash = SHA256(JSON.stringify(block))
-                console.log(`New block hash: ${block.hash}`)
+            self.getChainHeight().then(height => {
+                self._updateBlock(block, height)
+                console.log(`Block being added: ${block.hash}`)
                 self.chain.push(block)
                 self.height++
-                return block
+                resolve(block)
             }).catch(error => {
                 console.log(`Unable to add block: ${error}`)
                 reject(`Unable to add block: ${error}`)
             })
-            resolve(result)
         });
     }
 
