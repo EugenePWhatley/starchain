@@ -169,7 +169,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-           
+            resolve(self.chain.find(block => hash === block.hash.toString()))
         });
     }
 
