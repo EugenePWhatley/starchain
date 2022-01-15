@@ -71,14 +71,17 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            self.getChainHeight().then(height => {
-                self._updateBlock(block, height)
-                self.chain.push(block)
-                self.height++
-                resolve(block)
-            }).catch(error => {
-                console.log(`Unable to add block: ${error}`)
-                reject(`Unable to add block: ${error}`)
+            self.validateChain().then(errors => {
+                if (errors.length) return reject(`Validation failed: ${errors}`)
+                self.getChainHeight().then(height => {
+                    self._updateBlock(block, height)
+                    self.chain.push(block)
+                    self.height++
+                    resolve(block)
+                }).catch(error => {
+                    console.log(`Unable to add block: ${error}`)
+                    reject(`Unable to add block: ${error}`)
+                })
             })
         });
     }
@@ -154,8 +157,7 @@ class Blockchain {
             const { verified, error } = self._verifyMessage(message, address, signature)
             if (!verified) return reject(`Message failed verification: ${error}`)
             const block = new BlockClass.Block({ owner: address, star }); // https://knowledge.udacity.com/questions/322136
-            self._addBlock(block)
-            resolve(block)
+            self._addBlock(block).then(result => resolve(result))
         });
     }
 
@@ -214,10 +216,12 @@ class Blockchain {
      * 1. You should validate each block using `validateBlock`
      * 2. Each Block should check the with the previousBlockHash
      */
-     _invalidBlocks() {
+    _invalidBlocks(){
         return this.chain
-            .filter(block => !block.validate())
-            .map(({ hash }) => `Invalid block hash: ${hash}`);
+            .map(async block => {
+                const valid = await block.validate()
+                if (!valid) return `Invalid block hash: ${hash}`
+            }).filter(errors => !errors);
     }
 
     _brokenChainBlocks() {
