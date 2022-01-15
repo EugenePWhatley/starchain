@@ -1,3 +1,24 @@
+# How to run
+
+## Pre-req
+
+[Node and npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+Install packages:
+```bash
+npm install
+```
+_If you run into problems with `npm install`, it may be due to your Node version. Consider removing `package-lock.json` and trying again_
+
+## Starting the Service
+
+```bash
+npm start
+```
+_When running using `npm start`, it leverages the script in the `package.json` which sets `DEBUG=http` for logging purposes_
+
+____
+
+
 # Private Blockchain Application
 
 You are starting your journey as a Blockchain Developer, this project allows you to demonstrate

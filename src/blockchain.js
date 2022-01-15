@@ -11,6 +11,7 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const log = require('debug')('http');
 
 class Blockchain {
 
@@ -79,7 +80,7 @@ class Blockchain {
                     self.height++
                     resolve(block)
                 }).catch(error => {
-                    console.log(`Unable to add block: ${error}`)
+                    log(`Unable to add block: ${error}`)
                     reject(`Unable to add block: ${error}`)
                 })
             })
