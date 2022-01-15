@@ -65,7 +65,7 @@ class Blockchain {
         block.previousBlockHash = this.chain[height]?.hash
         block.time = new Date().getTime().toString()
         block.height = this.height + 1
-        block.hash = SHA256(JSON.stringify(block))
+        block.hash = SHA256(JSON.stringify(block)).toString()
     }
 
     _addBlock(block) {
@@ -73,7 +73,6 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             self.getChainHeight().then(height => {
                 self._updateBlock(block, height)
-                console.log(`Block being added: ${block.hash}`)
                 self.chain.push(block)
                 self.height++
                 resolve(block)
@@ -168,7 +167,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-            resolve(self.chain.find(block => hash === block.hash.toString()))
+            resolve(self.chain.find(block => hash === block.hash))
         });
     }
 
