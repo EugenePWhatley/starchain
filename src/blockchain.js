@@ -116,10 +116,47 @@ class Blockchain {
      * @param {*} signature 
      * @param {*} star 
      */
+
+    _verifyElapsedTime(message) {
+        const messageTime = parseInt(message.split(':')[1]);
+        const currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
+        const verified = ((currentTime - messageTime) / 60) <= 5;
+        return {
+            verified,
+            error: (verified ? null : "More than 5 minutes elapsed")
+        }
+    }
+
+    _verifyBitcoinMessage(message, address, signature) {
+        try {
+            return {
+                verified: bitcoinMessage.verify(message, address, signature),
+                error: (verified ? null : "Bitcoin verification failed")
+            }
+        } catch (error) {
+            return {
+                verified: false,
+                error
+            }
+        }
+    }
+
+    _verifyMessage(message, address, signature) {
+        const timeCheck = this._verifyElapsedTime(message);
+        if(!timeCheck.verified) return timeCheck
+
+        return this._verifyBitcoinMessage(message, address, signature);
+    }
+
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            
+            const { verified, error } = self._verifyMessage(message, address, signature)
+            if (!verified) return reject(`Message failed verification: ${error}`)
+
+            const block = new BlockClass.Block({ data: star });
+            self._addBlock(block)
+            resolve(block)
         });
     }
 
