@@ -65,7 +65,7 @@ class Block {
         let self = this;
         return new Promise((resolve, reject) => {
             if (!self.previousBlockHash) reject("Genesis Block")
-            else resolve(hex2ascii(this.body))
+            else resolve(JSON.parse(hex2ascii(this.body)))
         })
 
     }

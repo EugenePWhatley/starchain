@@ -127,8 +127,9 @@ class Blockchain {
 
     _verifyBitcoinMessage(message, address, signature) {
         try {
+            const verified = bitcoinMessage.verify(message, address, signature);
             return {
-                verified: bitcoinMessage.verify(message, address, signature),
+                verified,
                 error: (verified ? null : "Bitcoin verification failed")
             }
         } catch (error) {
@@ -151,8 +152,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             const { verified, error } = self._verifyMessage(message, address, signature)
             if (!verified) return reject(`Message failed verification: ${error}`)
-
-            const block = new BlockClass.Block({ data: star });
+            const block = new BlockClass.Block({ owner: address, star });
             self._addBlock(block)
             resolve(block)
         });
@@ -198,7 +198,12 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-            
+            self.chain.slice(1).forEach(block => {
+                block.getBData().then((star) => {
+                    if (star.owner === address) stars.push(star);
+                });
+            });
+            resolve(stars);
         });
     }
 
